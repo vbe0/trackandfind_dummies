@@ -7,36 +7,34 @@ var http = require('http');
 var fs = require("fs");
 
 
-var device = awsIot.device({
-   keyPath: './certs/privkey.pem',
-  certPath: './certs/cert.pem',
-    caPath: './certs/ca.pem',
-  clientId: thingName,
-      host: 'a31ovqfkmg1ev8.iot.eu-west-1.amazonaws.com'
-});
 
-
-sendSensorData = function () {
-
+sendSensorData = function (thingId, data) {
+    var device = awsIot.device({
+        keyPath: './certs/' + thingId +  '/privkey.pem',
+       certPath: './certs/' + thingId +  '/cert.pem',
+         caPath: './certs/ca.pem',
+       clientId: thingId,
+           host: 'a31ovqfkmg1ev8.iot.eu-west-1.amazonaws.com'
+     });
     // When the MQTT client connects, subscribe to the thing topic
     device.on('connect', function() {
         console.log('Client connected');
-        message = "69.68854 18.76281 3.552652V"
-        topic = "thing-update/INF-3910-3-v18/animal_tracker/00001412"
-        device.publish(topic, message, function (err){
-            console.log("Error?: ", err)
+        //message = "69.68854 18.76281 3.552652V"
+        message = {
+            state: {
+              reported: {
+                latlng: (69.67754, 18.76281),
+                payload: "69.68974,18.74281,3.552652V"
+              }
+            }
+          }
+        topic = '$aws/things/' + thingId +  '/shadow/update'
+        device.publish(topic, JSON.stringify(message), function (err){
+            if (err) {console.log("Error: ", err)}
+            console.log("message sendt")
         })
     });
-
-    // device.on('message', function(topic, payload) {
-    //     //console.log('Message: ', topic, payload.toString());
-    //     s = JSON.parse(payload.toString())['state']['reported']['payload'];
-    //     console.log('Message: ', s)
-    //     console.log("GG: ", payload.toString())
-    //     // Broadcast the message to any connected socket clients
-    //     return s;
-        
-    // });
 }
 
-sendSensorData()
+
+sendSensorData('00001412', "gg")
