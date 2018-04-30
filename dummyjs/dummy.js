@@ -16,7 +16,7 @@ var device = awsIot.device({
 });
 
 
-getSensorData = function () {
+sendSensorData = function () {
 
     // When the MQTT client connects, subscribe to the thing topic
     device.on('connect', function() {
@@ -39,4 +39,4 @@ getSensorData = function () {
     // });
 }
 
-getSensorData()
+sendSensorData()
