@@ -17,15 +17,12 @@ sendSensorData = function (thingId, data) {
            host: 'a31ovqfkmg1ev8.iot.eu-west-1.amazonaws.com'
      });
     // When the MQTT client connects, subscribe to the thing topic
+    var reported = createReported(thingId)
     device.on('connect', function() {
         console.log('Client connected');
-        //message = "69.68854 18.76281 3.552652V"
         message = {
             state: {
-              reported: {
-                latlng: (69.67754, 18.76281),
-                payload: "69.68974,18.74281,3.552652V"
-              }
+              reported
             }
           }
         topic = '$aws/things/' + thingId +  '/shadow/update'
@@ -35,6 +32,26 @@ sendSensorData = function (thingId, data) {
         })
     });
 }
+createReported = function(thingId) {
+    var rep = {}
+    rep.lat = getRandomArbitrary(69.08074, 69.69974).toFixed(5)
+    rep.lng = getRandomArbitrary(18.00281, 18.90281).toFixed(5)
+    rep.payload = "Heia jeg er en dummy"
+    rep.battery = 3.55
+    rep.temperature = 15.3
+    rep.sumAcc = 1.1
+    rep.updaterate = 30
+    rep.latlng = String(rep.lat) + ',' + String(rep.lng)
+    return rep 
+}
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 
-sendSensorData('00001412', "gg")
+var dummys = ['00001412','00001413','00001414','00001415']
+var i
+for (i = 0; i < 4; i++){
+    sendSensorData(dummys[i], "gg")
+}
